@@ -4,7 +4,12 @@ import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 
 
-
+/**
+ * @title Oracle-Nova LaunchPad
+ * @author Stanley Dera
+ * @notice A launcpad contract where projects can host ICOs after being fully vetted by Oraclex team 
+ * @notice There is a platform fee of 10% for every raise
+ */
 contract StakERC20 is Ownable {
     
     IERC20 public nativeToken;
@@ -26,6 +31,7 @@ contract StakERC20 is Ownable {
         address projectOwner;
         uint256 softcap;
         uint256 hardcap;
+        // string  unsoldTokens;
 
     }
 
