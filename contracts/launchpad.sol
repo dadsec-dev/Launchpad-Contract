@@ -44,6 +44,19 @@ contract StakERC20 is Ownable {
         admin = _admin;
     }
 
+    /**
+     * 
+     * @param _token contractaddress of the token 
+     * @param _minDeposit minimum deposit for every participant
+     * @param _maxDeposit maximum deposit for every participant
+     * @param _totalAmountToBeDistributed totalAmount to be distributed
+     * @param _exchangeRatio exchange rate for native coin to presale token
+     * @param _startTime when the launchpad commences
+     * @param _endTime when launchpad ends
+     * @param _softcap minimum target raise
+     * @param _hardcap maximum target raise
+     * @param _projectOwner project's team /owners wallet address
+     */
     function initiateTokenLaunch(address _token, uint256 _minDeposit, uint256 _maxDeposit, uint _totalAmountToBeDistributed, uint256 _exchangeRatio, uint256 _startTime, uint256 _endTime, uint256 _softcap, uint256 _hardcap, address _projectOwner) external onlyOwner  {
         require(_token != address(0), "Token address cannot be address zero");
         require(_minDeposit > 0, "Minimum Deposit must be greater than zero");
@@ -71,7 +84,12 @@ contract StakERC20 is Ownable {
         tokenLaunch.hardcap = _hardcap;
         
     }
-             
+    
+    /**
+     * 
+     * @param _tokenToContribute contract address of the token a user wishes to contribute to
+     * @param _amount amount user wants to contribute
+     */
 
     function contribute(IERC20 _tokenToContribute, uint256 _amount) public {
         //require(_tokenToContribute != address(0), "cannot contribute address zero");
@@ -100,6 +118,11 @@ contract StakERC20 is Ownable {
 
 
     }
+
+    /**
+     * 
+     * @param _tokenAddress contract address of token to be withdrawn 
+     */
 
     function withdraw(IERC20 _tokenAddress) public{
         
