@@ -6,8 +6,10 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 
 
 contract StakERC20 is Ownable {
+    
     IERC20 public nativeToken;
     address public admin;
+    
 
     uint256 constant SECONDS_PER_YEAR = 31536000;
 
@@ -64,7 +66,7 @@ contract StakERC20 is Ownable {
     function contribute(IERC20 _tokenToContribute, uint256 _amount) public {
         //require(_tokenToContribute != address(0), "cannot contribute address zero");
         require(_amount != 0, "You seriously want to contribute 0? c'mon man");
-        require(msg.sender != onlyOwner, "admin cannot participate");
+        // require(msg.sender != onlyOwner.address, "admin cannot participate");
 
         launchpad storage launch = launchpads[address(_tokenToContribute)];
 
@@ -90,7 +92,7 @@ contract StakERC20 is Ownable {
     }
 
     function withdraw(IERC20 _tokenAddress) public{
-        require(msg.sender != onlyOwner, "Admin cannot withdraw user's tokens");
+        
         launchpad storage launch = launchpads[address(_tokenAddress)];
         uint256 userAmountMultiplier = launch.exchangeRatio;
         IERC20 token = launch.token;
@@ -105,7 +107,24 @@ contract StakERC20 is Ownable {
 
     }
 
-    function withdrawRaisedFunds()
+    function withdrawRaisedFunds(IERC20 _token) external onlyOwner {
+        launchpad storage tokenLaunch = launchpads[address(_token)];
+        require(tokenLaunch.endTime < block.timestamp, "launchpad hasn't ended yet");
+
+        uint256 totalRaised = tokenLaunch.totalRaised;
+        uint256 platformFee = (totalRaised * 10) / 100; //platfrom percentage from raise
+        uint256 amountToWithdrawAfterPlatformFee = totalRaised - platformFee;
+
+        require(totalRaised > 0, "Unfortunatley, you didn't raise anything lmao");
+
+        IERC20(_token).transfer(admin, platformFee);//withdraw platform fee for this particular token auction to the platform owner/team address
+        IERC20(_token).transfer(tokenLaunch.projectOwner, amountToWithdrawAfterPlatformFee);//withdraw the rest to project owner address
+
+        tokenLaunch.totalRaised = 0;//reset totalRaised;
+
+        
+
+    }
 
 
 
