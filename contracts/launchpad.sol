@@ -9,7 +9,6 @@ contract StakERC20 is Ownable {
     IERC20 public nativeToken;
     address public admin;
 
-
     uint256 constant SECONDS_PER_YEAR = 31536000;
 
     struct launchpad {
@@ -20,11 +19,15 @@ contract StakERC20 is Ownable {
         uint256 exchangeRatio;
         uint256 startTime;
         uint256 endTime;
+        uint256 totalRaised;
         bool isActive;
+        address projectOwner;
 
     }
 
     mapping (address => launchpad) launchpads;
+    mapping (address => uint256) userContribution;
+    mapping(address => bool) hasParticipated;
 
     constructor(address _nativeToken, address _admin) {
         nativeToken = IERC20(_nativeToken);
@@ -53,20 +56,56 @@ contract StakERC20 is Ownable {
         tokenLaunch.startTime = _startTime;
         tokenLaunch.endTime = _endTime;
         tokenLaunch.isActive = true;
+        tokenLaunch.projectOwner = msg.sender;
         
     }
+             
 
-    function contribute(address _tokenToContribute, uint256 _amount) public {
-        require(_tokenToContribute != address(0), "cannot contribute address zero");
+    function contribute(IERC20 _tokenToContribute, uint256 _amount) public {
+        //require(_tokenToContribute != address(0), "cannot contribute address zero");
         require(_amount != 0, "You seriously want to contribute 0? c'mon man");
+        require(msg.sender != onlyOwner, "admin cannot participate");
 
-        launchpad storage launch = launchpads[_tokenToContribute];
+        launchpad storage launch = launchpads[address(_tokenToContribute)];
 
         require(launch.isActive = true, "Launcpad isn't active");
         require(_amount > launch.minDeposit, "Deposit amount is less than minimum Deposit for this token IFO");
         require(_amount <= launch.maxDeposit, "Amount is more than the maximum deposit amount");
-        require(IERC20(_tokenToContribute) = launch.token, "Invalid token input");
+        require(_tokenToContribute == launch.token, "Invalid token input");
+        require(_amount < launch.totalAmountToBeDistributed, "you cannot buy everything");
+        require(block.timestamp > launch.startTime && block.timestamp <= launch.endTime, "Token launchpad is inactive");
+        require(nativeToken.balanceOf(msg.sender) >= _amount, "Insufficient Balance");
+
+        nativeToken.transferFrom(msg.sender, address(this), _amount);
+        launch.totalRaised += _amount;
+        require(userContribution[msg.sender] == 0, "You cannot participate more than once");
+       
+        userContribution[msg.sender] = _amount;
+
+
+        hasParticipated[msg.sender] = true;
+
+
+
     }
+
+    function withdraw(IERC20 _tokenAddress) public{
+        require(msg.sender != onlyOwner, "Admin cannot withdraw user's tokens");
+        launchpad storage launch = launchpads[address(_tokenAddress)];
+        uint256 userAmountMultiplier = launch.exchangeRatio;
+        IERC20 token = launch.token;
+
+        require(block.timestamp > launch.endTime, "LaunchPad hasn't ended");
+        require(launch.isActive = false, "LauncPad has ended");
+        require(hasParticipated[msg.sender] = true, "You didn't participate in this launchpad");
+
+        uint256 userAmountToRecive = userContribution[msg.sender] * userAmountMultiplier;
+
+        token.transfer(msg.sender, userAmountToRecive);
+
+    }
+
+    function withdrawRaisedFunds()
 
 
 
