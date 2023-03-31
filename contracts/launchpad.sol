@@ -24,6 +24,8 @@ contract StakERC20 is Ownable {
         uint256 totalRaised;
         bool isActive;
         address projectOwner;
+        uint256 softcap;
+        uint256 hardcap;
 
     }
 
@@ -36,7 +38,7 @@ contract StakERC20 is Ownable {
         admin = _admin;
     }
 
-    function initiateTokenLaunch(address _token, uint256 _minDeposit, uint256 _maxDeposit, uint _totalAmountToBeDistributed, uint256 _exchangeRatio, uint256 _startTime, uint256 _endTime) external onlyOwner  {
+    function initiateTokenLaunch(address _token, uint256 _minDeposit, uint256 _maxDeposit, uint _totalAmountToBeDistributed, uint256 _exchangeRatio, uint256 _startTime, uint256 _endTime, uint256 _softcap, uint256 _hardcap) external onlyOwner  {
         require(_token != address(0), "Token address cannot be address zero");
         require(_minDeposit > 0, "Minimum Deposit must be greater than zero");
         require(_maxDeposit > 0, "MaxDeposit must be greater than zero");
@@ -59,6 +61,8 @@ contract StakERC20 is Ownable {
         tokenLaunch.endTime = _endTime;
         tokenLaunch.isActive = true;
         tokenLaunch.projectOwner = msg.sender;
+        tokenLaunch.softcap = _softcap;
+        tokenLaunch.hardcap = _hardcap;
         
     }
              
