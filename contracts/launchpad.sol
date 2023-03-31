@@ -10,7 +10,7 @@ import "@openzeppelin/contracts/access/Ownable.sol";
  * @notice A launcpad contract where projects can host ICOs after being fully vetted by Oraclex team 
  * @notice There is a platform fee of 10% for every raise
  */
-contract StakERC20 is Ownable {
+contract OraclePAD is Ownable {
     
     IERC20 public nativeToken;
     address public admin;
