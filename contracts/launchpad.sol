@@ -82,13 +82,13 @@ contract StakERC20 is Ownable {
     function initiateTokenLaunch(address _token, uint256 _minDeposit, uint256 _maxDeposit, uint _totalAmountToBeDistributed, uint256 _exchangeRatio, uint256 _startTime, uint256 _endTime, uint256 _softcap, uint256 _hardcap, address _projectOwner) external onlyOwner  {
         // require(_token != address(0), "Token address cannot be address zero");
         if (_token == address(0)) {revert CANNOT_BE_ADDRESS_ZERO();}
-        if (_minDeposit < 0) {revert MIN_DEPOSIT_MUST_GREATER_THAN_ZERO();}
-        if(_maxDeposit < _minDeposit) {revert MAX_DEPOSIT_MUST_BE_GREATER_MIN_DEPOSIT();}
-        if(_maxDeposit < 0 ) {revert MAX_DEPOSIT_MUST_BE_GREATER_ZERO();}
-        if(_totalAmountToBeDistributed < 0) {revert TOTAL_AMOUNT_TO_BE_DISTRIBUTED_MUST_BE_GREATER_THAN_ZERO();}
-        if(_exchangeRatio < 0) {revert EXCHANGERATIO_MUST_BE_GREATER_THAN_ZERO();}
+        if (_minDeposit <= 0) {revert MIN_DEPOSIT_MUST_GREATER_THAN_ZERO();}
+        if(_maxDeposit <= _minDeposit) {revert MAX_DEPOSIT_MUST_BE_GREATER_MIN_DEPOSIT();}
+        if(_maxDeposit <= 0 ) {revert MAX_DEPOSIT_MUST_BE_GREATER_ZERO();}
+        if(_totalAmountToBeDistributed <= 0) {revert TOTAL_AMOUNT_TO_BE_DISTRIBUTED_MUST_BE_GREATER_THAN_ZERO();}
+        if(_exchangeRatio <= 0) {revert EXCHANGERATIO_MUST_BE_GREATER_THAN_ZERO();}
         if(_startTime < block.timestamp) {revert START_TIME_SHOULD_NOT_BE_LESS_THAN_BLOCK_DOT_TIMESTAMP();}
-        if(_endTime < _startTime) {revert END_TIME_MUST_BE_GREATER_THAN_START_TIME();}
+        if(_endTime <= _startTime) {revert END_TIME_MUST_BE_GREATER_THAN_START_TIME();}
 
 
         launchpad storage tokenLaunch = launchpads[_token];
